@@ -456,17 +456,6 @@ public class AddressBook {
         return getMessageForPersonsDisplayedSummary(personsFound);
     }
 
-    private static String executeDeletePersonByName(String name){
-        String[] personToBeDeleted;
-        for (String[] person : ALL_PERSONS){
-            if (getNameFromPerson(person).compareTo(name) == 0){
-                personToBeDeleted = person;
-                break;
-            }
-        }
-        return "abc";
-    }
-
     /**
      * Constructs a feedback message to summarise an operation that displayed a listing of persons.
      *
@@ -800,7 +789,6 @@ public class AddressBook {
         savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
     }
 
-
     /**
      * Deletes the specified person from the addressbook if it is inside. Saves any changes to storage file.
      *
@@ -813,6 +801,17 @@ public class AddressBook {
             savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
         }
         return changed;
+    }
+
+    private static String executeDeletePersonByName(String name){
+        String[] personToBeDeleted;
+        for (String[] person : ALL_PERSONS){
+            if (getNameFromPerson(person).compareTo(name) == 0){
+                personToBeDeleted = person;
+                break;
+            }
+        }
+        return "abc";
     }
 
     /**
