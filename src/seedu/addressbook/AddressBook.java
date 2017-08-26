@@ -803,15 +803,20 @@ public class AddressBook {
         return changed;
     }
 
-    private static String executeDeletePersonByName(String name){
-        String[] personToBeDeleted;
+    private static boolean executeDeletePersonByName(String name){
+        String[] personToBeDeleted = new String[3];
         for (String[] person : ALL_PERSONS){
             if (getNameFromPerson(person).compareTo(name) == 0){
                 personToBeDeleted = person;
                 break;
             }
         }
-        return "abc";
+
+        final boolean changed = ALL_PERSONS.remove(personToBeDeleted);
+        if (changed) {
+            savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
+        }
+        return changed;
     }
 
     /**
