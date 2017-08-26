@@ -456,6 +456,17 @@ public class AddressBook {
         return getMessageForPersonsDisplayedSummary(personsFound);
     }
 
+    private static String executeDeletePersonByName(String name){
+        String[] personToBeDeleted;
+        for (String[] person : ALL_PERSONS){
+            if (getNameFromPerson(person).compareTo(name) == 0){
+                personToBeDeleted = person;
+                break;
+            }
+        }
+        return "abc";
+    }
+
     /**
      * Constructs a feedback message to summarise an operation that displayed a listing of persons.
      *
@@ -785,7 +796,7 @@ public class AddressBook {
     private static void addPersonToAddressBook(String[] person) {
         ALL_PERSONS.add(person);
         Collections.sort(ALL_PERSONS, (String[] person1, String[] person2)->
-        person1[0].compareTo(person2[0]));
+        getNameFromPerson(person1).compareTo(getNameFromPerson(person2)));
         savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
     }
 
