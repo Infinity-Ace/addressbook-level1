@@ -784,8 +784,11 @@ public class AddressBook {
      */
     private static void addPersonToAddressBook(String[] person) {
         ALL_PERSONS.add(person);
+        Collections.sort(ALL_PERSONS, (String[] person1, String[] person2)->
+        person1[0].compareTo(person2[0]));
         savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
     }
+
 
     /**
      * Deletes the specified person from the addressbook if it is inside. Saves any changes to storage file.
