@@ -118,8 +118,15 @@ public class AddressBook {
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
                                                     + "the last find/list call.";
+
+    private static final String COMMAND_DELETE_NAME_WORD = "deleteByName";
+    private static final String COMMAND_DELETE_NAME_DESC = "Deletes the person identified by the matching input name";
+
     private static final String COMMAND_DELETE_PARAMETER = "INDEX";
     private static final String COMMAND_DELETE_EXAMPLE = COMMAND_DELETE_WORD + " 1";
+
+    private static final String COMMAND_DELETE_NAME_PARAMETER = "NAME";
+    private static final String COMMAND_DELETE_NAME_EXAMPLE = COMMAND_DELETE_NAME_WORD + " John Doe";
 
     private static final String COMMAND_CLEAR_WORD = "clear";
     private static final String COMMAND_CLEAR_DESC = "Clears address book permanently.";
@@ -369,6 +376,8 @@ public class AddressBook {
         final String commandType = commandTypeAndParams[0];
         final String commandArgs = commandTypeAndParams[1];
         switch (commandType) {
+            case COMMAND_DELETE_NAME_WORD:
+                return executeDeletePersonByName(commandArgs);
         case COMMAND_ADD_WORD:
             return executeAddPerson(commandArgs);
         case COMMAND_FIND_WORD:
@@ -513,17 +522,31 @@ public class AddressBook {
     }
 
     /**
-     * Checks validity of delete person argument string's format.
+     * Deletes person identified using name
      *
-     * @param rawArgs raw command args string for the delete person command
-     * @return whether the input args string is valid
+     * @param commandArgs full command args string from the user
+     * @return feedback display message for the operation result
      */
+
+    private static String executeDeletePersonByName(String commandArgs) {
+        String[] personToDelete = findPersonByName(commandArgs);
+        return deletePersonByName(personToDelete) ? getMessageForSuccessfulDelete(personToDelete) // success
+                : MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
+    }
+
+        /**
+         * Checks validity of delete person argument string's format.
+         *
+         * @param rawArgs raw command args string for the delete person command
+         * @return whether the input args string is valid
+         */
+
     private static boolean isDeletePersonArgsValid(String rawArgs) {
         try {
             final int extractedIndex = Integer.parseInt(rawArgs.trim()); // use standard libraries to parse
             return extractedIndex >= DISPLAYED_INDEX_OFFSET;
         } catch (NumberFormatException nfe) {
-            return false;
+            return true;
         }
     }
 
@@ -550,9 +573,9 @@ public class AddressBook {
     /**
      * Constructs a feedback message for a successful delete person command execution.
      *
-     * @see #executeDeletePerson(String)
      * @param deletedPerson successfully deleted
      * @return successful delete person feedback message
+     * @see #executeDeletePerson(String)
      */
     private static String getMessageForSuccessfulDelete(String[] deletedPerson) {
         return String.format(MESSAGE_DELETE_PERSON_SUCCESS, getMessageForFormattedPersonData(deletedPerson));
@@ -627,7 +650,6 @@ public class AddressBook {
     /**
      * Shows the list of persons to the user.
      * The list will be indexed, starting from 1.
-     *
      */
     private static void showToUser(ArrayList<String[]> persons) {
         String listAsString = getDisplayString(persons);
@@ -644,8 +666,8 @@ public class AddressBook {
             final String[] person = persons.get(i);
             final int displayIndex = i + DISPLAYED_INDEX_OFFSET;
             messageAccumulator.append('\t')
-                              .append(getIndexedPersonListElementMessage(displayIndex, person))
-                              .append(LS);
+                    .append(getIndexedPersonListElementMessage(displayIndex, person))
+                    .append(LS);
         }
         return messageAccumulator.toString();
     }
@@ -654,7 +676,7 @@ public class AddressBook {
      * Constructs a prettified listing element message to represent a person and their data.
      *
      * @param visibleIndex visible index for this listing
-     * @param person to show
+     * @param person       to show
      * @return formatted listing message with index
      */
     private static String getIndexedPersonListElementMessage(int visibleIndex, String[] person) {
@@ -689,7 +711,7 @@ public class AddressBook {
      * @return the actual person object in the last shown person listing
      */
     private static String[] getPersonByLastVisibleIndex(int lastVisibleIndex) {
-       return latestPersonListingView.get(lastVisibleIndex - DISPLAYED_INDEX_OFFSET);
+        return latestPersonListingView.get(lastVisibleIndex - DISPLAYED_INDEX_OFFSET);
     }
 
 
@@ -784,8 +806,8 @@ public class AddressBook {
      */
     private static void addPersonToAddressBook(String[] person) {
         ALL_PERSONS.add(person);
-        Collections.sort(ALL_PERSONS, (String[] person1, String[] person2)->
-        getNameFromPerson(person1).compareTo(getNameFromPerson(person2)));
+        Collections.sort(ALL_PERSONS, (String[] person1, String[] person2) ->
+                getNameFromPerson(person1).compareTo(getNameFromPerson(person2)));
         savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
     }
 
@@ -803,21 +825,33 @@ public class AddressBook {
         return changed;
     }
 
-    private static boolean executeDeletePersonByName(String name){
-        String[] personToBeDeleted = new String[3];
-        for (String[] person : ALL_PERSONS){
-            if (getNameFromPerson(person).compareTo(name) == 0){
-                personToBeDeleted = person;
-                break;
-            }
-        }
+    /**
+     * Deletes the specified person from the addressbook if it is inside. Saves any changes to storage file.
+     *
+     * @param inputPerson the person returned by findPersonByName.
+     * @return true if the given person was found and deleted in the model
+     */
 
-        final boolean changed = ALL_PERSONS.remove(personToBeDeleted);
+    private static boolean deletePersonByName(String[] inputPerson) {
+
+        final boolean changed = ALL_PERSONS.remove(inputPerson);
         if (changed) {
             savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
         }
         return changed;
     }
+
+    private static String[] findPersonByName(String name) {
+        String[] personToBeReturned = new String[3];
+        for (String[] person : ALL_PERSONS) {
+            if (getNameFromPerson(person).compareTo(name) == 0) {
+                personToBeReturned = person;
+                break;
+            }
+        }
+        return personToBeReturned;
+    }
+
 
     /**
      * Returns all persons in the address book
@@ -1104,6 +1138,7 @@ public class AddressBook {
                 + getUsageInfoForFindCommand() + LS
                 + getUsageInfoForViewCommand() + LS
                 + getUsageInfoForDeleteCommand() + LS
+                + getUsageInfoForDeleteByNameCommand() + LS
                 + getUsageInfoForClearCommand() + LS
                 + getUsageInfoForExitCommand() + LS
                 + getUsageInfoForHelpCommand();
@@ -1128,6 +1163,12 @@ public class AddressBook {
         return String.format(MESSAGE_COMMAND_HELP, COMMAND_DELETE_WORD, COMMAND_DELETE_DESC) + LS
                 + String.format(MESSAGE_COMMAND_HELP_PARAMETERS, COMMAND_DELETE_PARAMETER) + LS
                 + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_DELETE_EXAMPLE) + LS;
+    }
+    /** Returns the string for showing 'delete' command usage instruction */
+    private static String getUsageInfoForDeleteByNameCommand(){
+        return String.format(MESSAGE_COMMAND_HELP, COMMAND_DELETE_NAME_WORD, COMMAND_DELETE_NAME_DESC) + LS
+                + String.format(MESSAGE_COMMAND_HELP_PARAMETERS, COMMAND_DELETE_NAME_PARAMETER) + LS
+                + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_DELETE_NAME_EXAMPLE) + LS;
     }
 
     /** Returns string for showing 'clear' command usage instruction */
