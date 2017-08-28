@@ -1098,8 +1098,7 @@ public class AddressBook {
      * @param name to be validated
      */
     private static boolean isPersonNameValid(String name) {
-        return name.matches("(\\w|\\s)+");  // name is nonempty mixture of alphabets and whitespace
-        //TODO: implement a more permissive validation
+        return name.matches("^[\\p{L} .'-]+$");  // name is nonempty mixture of alphabets, whitespace, dashes, dots and unicode characters
     }
 
     /**
@@ -1109,7 +1108,6 @@ public class AddressBook {
      */
     private static boolean isPersonPhoneValid(String phone) {
         return phone.matches("\\d+");    // phone nonempty sequence of digits
-        //TODO: implement a more permissive validation
     }
 
     /**
@@ -1119,8 +1117,14 @@ public class AddressBook {
      * @return whether arg is a valid person email
      */
     private static boolean isPersonEmailValid(String email) {
-        return email.matches("\\S+@\\S+\\.\\S+"); // email is [non-whitespace]@[non-whitespace].[non-whitespace]
-        //TODO: implement a more permissive validation
+    	return email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+		    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+    	/**
+    	 * Must start with “_A-Za-z0-9-\\+” , optionally follow by “.[_A-Za-z0-9-]”, and end with a “@” symbol.
+    	 * Email’s domain name must start with “A-Za-z0-9-“, followed by first level Tld (.com, .net) “.[A-Za-z0-9]”
+    	 * and optionally follow by a second level Tld (.com.au, .com.my) “\\.[A-Za-z]{2,}”,
+    	 * where second level Tld must start with a dot “.” and length must equal or more than 2 characters.
+    	 */
     }
 
 
