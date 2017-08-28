@@ -1,19 +1,19 @@
 package seedu.addressbook;
-
 /*
  * NOTE : =============================================================
  * This class is written in a procedural fashion (i.e. not Object-Oriented)
  * Yes, it is possible to write non-OO code using an OO language.
  * ====================================================================
  */
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -273,7 +273,7 @@ public class AddressBook {
             setupGivenFileForStorage(args[0]);
         }
 
-        if(args.length == 0) {
+        if (args.length == 0) {
             setupDefaultFileForStorage();
         }
     }
@@ -284,12 +284,10 @@ public class AddressBook {
      * Exits if the file name is not acceptable.
      */
     private static void setupGivenFileForStorage(String filePath) {
-
         if (!isValidFilePath(filePath)) {
             showToUser(String.format(MESSAGE_INVALID_FILE, filePath));
             exitProgram();
         }
-
         storageFilePath = filePath;
         createFileIfMissing(filePath);
     }
@@ -358,7 +356,6 @@ public class AddressBook {
         initialiseAddressBookModel(loadPersonsFromFile(storageFilePath));
     }
 
-
     /*
      * ===========================================
      *           COMMAND LOGIC
@@ -378,22 +375,22 @@ public class AddressBook {
         switch (commandType) {
             case COMMAND_DELETE_NAME_WORD:
                 return executeDeletePersonByName(commandArgs);
-        case COMMAND_ADD_WORD:
-            return executeAddPerson(commandArgs);
-        case COMMAND_FIND_WORD:
-            return executeFindPersons(commandArgs);
-        case COMMAND_LIST_WORD:
-            return executeListAllPersonsInAddressBook();
-        case COMMAND_DELETE_WORD:
-            return executeDeletePerson(commandArgs);
-        case COMMAND_CLEAR_WORD:
-            return executeClearAddressBook();
-        case COMMAND_HELP_WORD:
-            return getUsageInfoForAllCommands();
-        case COMMAND_EXIT_WORD:
-            executeExitProgramRequest();
-        default:
-            return getMessageForInvalidCommandInput(commandType, getUsageInfoForAllCommands());
+            case COMMAND_ADD_WORD:
+                return executeAddPerson(commandArgs);
+            case COMMAND_FIND_WORD:
+                return executeFindPersons(commandArgs);
+            case COMMAND_LIST_WORD:
+                return executeListAllPersonsInAddressBook();
+            case COMMAND_DELETE_WORD:
+                return executeDeletePerson(commandArgs);
+            case COMMAND_CLEAR_WORD:
+                return executeClearAddressBook();
+            case COMMAND_HELP_WORD:
+                return getUsageInfoForAllCommands();
+            case COMMAND_EXIT_WORD:
+                executeExitProgramRequest();
+            default:
+                return getMessageForInvalidCommandInput(commandType, getUsageInfoForAllCommands());
         }
     }
 
@@ -666,8 +663,8 @@ public class AddressBook {
             final String[] person = persons.get(i);
             final int displayIndex = i + DISPLAYED_INDEX_OFFSET;
             messageAccumulator.append('\t')
-                    .append(getIndexedPersonListElementMessage(displayIndex, person))
-                    .append(LS);
+                            .append(getIndexedPersonListElementMessage(displayIndex, person))
+                            .append(LS);
         }
         return messageAccumulator.toString();
     }
@@ -691,7 +688,8 @@ public class AddressBook {
      */
     private static String getMessageForFormattedPersonData(String[] person) {
         return String.format(MESSAGE_DISPLAY_PERSON_DATA,
-                getNameFromPerson(person), getPhoneFromPerson(person), getEmailFromPerson(person));
+                             getNameFromPerson(person), getPhoneFromPerson(person),
+                             getEmailFromPerson(person));
     }
 
     /**
