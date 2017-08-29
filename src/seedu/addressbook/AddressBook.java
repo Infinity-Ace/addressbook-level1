@@ -804,10 +804,17 @@ public class AddressBook {
      */
     private static void addPersonToAddressBook(String[] person) {
         ALL_PERSONS.add(person);
-        Collections.sort(ALL_PERSONS, (String[] person1, String[] person2) ->
-                getNameFromPerson(person1).compareTo(getNameFromPerson(person2)));
+        sortAddressBookByName();
         savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
     }
+    
+    /**
+     * Sorts the Address Book alphabetically from A - Z by name.
+     */
+    private static void sortAddressBookByName() {
+    	Collections.sort(ALL_PERSONS, (String[] person1, String[] person2) ->
+                getNameFromPerson(person1).compareTo(getNameFromPerson(person2)));
+    } 
 
     /**
      * Deletes the specified person from the addressbook if it is inside. Saves any changes to storage file.
